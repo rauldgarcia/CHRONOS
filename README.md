@@ -156,6 +156,7 @@ graph TD
 
 ## 📂 Project Structure
 
+```
 chronos/
 ├── chronos/
 │ ├── api/ # FastAPI application
@@ -168,6 +169,7 @@ chronos/
 ├── tests/ # Pytest unit and integration tests
 ├── docker/ # Dockerfiles
 └── data/ # Local data storage (git ignored)
+```
 
 ---
 
