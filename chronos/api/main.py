@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 import pandas as pd
 from pathlib import Path
+import os
 
 app = FastAPI(title="CHRONOS API")
 
@@ -11,7 +12,8 @@ def health_check():
 @app.get("/data/{ticker}")
 def get_ticker_data(ticker: str):
     """Get historical data for a ticker."""
-    csv_path = Path("chronos/data/raw_stock_prices.csv")
+    project_root = Path(__file__).parent.parent.parent
+    csv_path = project_root / "chronos" / "data" / "raw_stock_prices.csv"
 
     if not csv_path.exists():
         raise HTTPException(status_code=404, detail="Data not found, Run ingestion first.")
@@ -20,7 +22,7 @@ def get_ticker_data(ticker: str):
     ticker_data = df[df['ticker'] == ticker]
 
     if len(ticker_data) == 0:
-        raise HTTPException(status_code=404, datail=f"Ticker {ticker} not found")
+        raise HTTPException(status_code=404, detail=f"Ticker {ticker} not found")
 
     ticker_data = ticker_data.fillna(0)
 
