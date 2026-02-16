@@ -1,2 +1,53 @@
 prompt.txt
 chronos/data/raw_stock_prices.csv
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Data
+data/
+*.csv
+*.parquet
+*.pkl
+
+# MLflow
+mlruns/
+mlflow/
+
+# Airflow
+airflow/logs/
+airflow.db
+airflow.cfg
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
