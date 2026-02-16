@@ -26,53 +26,55 @@
 
 ## 🏗️ System Architecture
 
-\[TITAN Agents\]
-↓ HTTP Request
-\[CHRONOS API\]
-↓
-\[Champion Model\] ← MLflow Registry
-↓
-\[Ensemble: Ridge + XGBoost + LSTM\]
+```mermaid
+graph TD
+    TITAN[TITAN Agents] -->|HTTP POST /forecast| API[CHRONOS FastAPI]
+
+    API --> Registry[MLflow Model Registry]
+    Registry --> Champion{Champion Model}
+
+    Champion --> Ridge[Ridge Regression]
+    Champion --> XGBoost[XGBoost Gradient Boosting]
+    Champion --> LSTM[LSTM Deep Learning]
+
+    Ridge --> Ensemble[Voting Ensemble]
+    XGBoost --> Ensemble
+    LSTM --> Ensemble
+
+    Ensemble --> Prediction[Forecast Response]
+    Prediction --> TITAN
+
+    subgraph "Training Pipeline (Airflow)"
+        Ingest[Data Ingestion] --> Features[Feature Engineering]
+        Features --> Train[Model Training]
+        Train --> Eval[Evaluation & Champion Selection]
+        Eval --> Registry
+    end
+
+    subgraph "Monitoring (Evidently AI)"
+        Drift[Drift Detection] -.->|Trigger Retraining| Train
+    end
+
+    style Champion fill:#ff6b6b
+    style Ensemble fill:#4ecdc4
+    style TITAN fill:#95e1d3
+    style API fill:#f38181
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-Component
-
-Technology
-
-**Orchestration**
-
-Apache Airflow 2.8
-
-**Model Tracking**
-
-MLflow 2.10
-
-**Big Data**
-
-PySpark 3.5
-
-**Drift Detection**
-
-Evidently AI 0.4
-
-**API Framework**
-
-FastAPI + Uvicorn
-
-**Database**
-
-PostgreSQL 16
-
-**Deployment**
-
-Docker + Cloud Run
-
-**CI/CD**
-
-GitHub Actions + Poetry
+| Component           | Technology              |
+| ------------------- | ----------------------- |
+| **Orchestration**   | Apache Airflow 2.8      |
+| **Model Tracking**  | MLflow 2.10             |
+| **Big Data**        | PySpark 3.5             |
+| **Drift Detection** | Evidently AI 0.4        |
+| **API Framework**   | FastAPI + Uvicorn       |
+| **Database**        | PostgreSQL 16           |
+| **Deployment**      | Docker + Cloud Run      |
+| **CI/CD**           | GitHub Actions + Poetry |
 
 ---
 
@@ -113,13 +115,13 @@ GitHub Actions + Poetry
 
 ### ✅ Phase 1: Foundation (Week 1-2)
 
-- \[x\] **Day 1**: Project initialization with Poetry + Git setup
-- \[x\] **Day 2**: Yahoo Finance data ingestion (5 years historical data)
-- \[x\] **Day 3**: Basic FastAPI endpoints (`/health`, `/data/{ticker}`)
-- \[x\] **Day 4**: Fix NaN handling in API responses
-- \[ \] **Day 5**: Unit tests for data ingestion
-- \[ \] **Day 6**: Docker Compose setup (Postgres + MLflow + Airflow)
-- \[ \] **Day 7**: Database integration (SQLAlchemy + Alembic migrations)
+- \[x\] Project initialization with Poetry + Git setup
+- \[x\] Yahoo Finance data ingestion (5 years historical data)
+- \[x\] Basic FastAPI endpoints (`/health`, `/data/{ticker}`)
+- \[x\] Fix NaN handling in API responses
+- \[ \] Unit tests for data ingestion
+- \[ \] Docker Compose setup (Postgres + MLflow + Airflow)
+- \[ \] Database integration (SQLAlchemy + Alembic migrations)
 
 ### 🔄 Phase 2: Feature Engineering (Week 3-4)
 
