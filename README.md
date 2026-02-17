@@ -119,7 +119,7 @@ graph TD
 - \[x\] Yahoo Finance data ingestion (5 years historical data)
 - \[x\] Basic FastAPI endpoints (`/health`, `/data/{ticker}`)
 - \[x\] Fix NaN handling in API responses
-- \[ \] Unit tests for data ingestion
+- \[x\] Unit tests for data ingestion
 - \[ \] Docker Compose setup (Postgres + MLflow + Airflow)
 - \[ \] Database integration (SQLAlchemy + Alembic migrations)
 
