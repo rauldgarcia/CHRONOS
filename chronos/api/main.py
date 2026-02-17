@@ -1,34 +1,44 @@
-from fastapi import FastAPI, HTTPException
-import pandas as pd
-from pathlib import Path
-import os
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import desc
+from chronos.utils.db import get_db
+from chronos.models.sql import StockData
 
 app = FastAPI(title="CHRONOS API")
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "database": "connected"}
 
 @app.get("/data/{ticker}")
-def get_ticker_data(ticker: str):
-    """Get historical data for a ticker."""
-    project_root = Path(__file__).parent.parent.parent
-    csv_path = project_root / "chronos" / "data" / "raw_stock_prices.csv"
+def get_ticker_data(ticker: str, limit: int = 10, db: Session = Depends(get_db)):
+    """Get historical data for a ticker from Postgres."""
 
-    if not csv_path.exists():
-        raise HTTPException(status_code=404, detail="Data not found, Run ingestion first.")
+    results = (
+        db.query(StockData)
+        .filter(StockData.ticker == ticker)
+        .order_by(desc(StockData.date))
+        .limit(limit)
+        .all()
+    )
 
-    df = pd.read_csv(csv_path)
-    ticker_data = df[df['ticker'] == ticker]
+    if not results:
+        raise HTTPException(status_code=404, detail=f"Ticker {ticker} not found in DB. Run ingestion.")
 
-    if len(ticker_data) == 0:
-        raise HTTPException(status_code=404, detail=f"Ticker {ticker} not found")
-
-    ticker_data = ticker_data.fillna(0)
+    data = [
+        {
+            "date": r.date,
+            "close": r.close,
+            "volume": r.volume,
+            "open": r.open,
+            "high": r.high,
+            "low": r.low,
+        } for r in results
+    ]
 
     return {
         "ticker": ticker,
-        "rows": len(ticker_data),
-        "latest_price": float(ticker_data.iloc[-1]['Close']),
-        "data": ticker_data.tail(10).to_dict(orient="records")
+        "rows_returned": len(data),
+        "latest_price": data[0]["close"],
+        "data": data
     }

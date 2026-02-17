@@ -1,24 +1,64 @@
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+from tenacity import retry, stop_after_attempt, wait_exponential
+from sqlalchemy.dialects.postgresql import insert
+from chronos.utils.db import engine, Base, SessionLocal
+from chronos.models.sql import StockData
 
+Base.metadata.create_all(bind=engine)
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def download_stock_data(ticker: str, years: int = 5) -> pd.DataFrame:
-    """Download historical stock data from Yahoo Finance."""
+    """Download historical stock data from Yahoo Finance with retries."""
+    print(f"Downloading {ticker}...")
 
     end_date = datetime.now()
     start_date = end_date - timedelta(days=years*365)
 
-    df = yf.download(ticker, start=start_date, end=end_date)
+    # Set Auto_adjust=True to obtain adjusted prices (splits/dividends)
+    df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=True, multi_level_index=False)
+
+    if df.empty:
+        raise ValueError(f"No data found for {ticker}")
+
     df['ticker'] = ticker
     df.reset_index(inplace=True)
 
-    return df
+    df = df.rename(columns={
+        "Date": "date",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close",
+        "Volume": "volume"
+    })
+
+    return df[['date', 'ticker', 'open', 'high', 'low', 'close', 'volume']]
+
+def save_to_postgres(df: pd.DataFrame):
+    """
+    Upsert data tp PostgreSQL efficiently.
+    If ticker+date exists, do nothing (or update).
+    """
+    print(f"Saving {len(df)} rows to DB...")
+    
+    data = df.to_dict(orient='records')
+
+    with SessionLocal() as session:
+        stmt = insert(StockData).values(data)
+        stmt = stmt.on_conflict_do_nothing(index_elements=['ticker', 'date'])
+
+        session.execute(stmt)
+        session.commit()
+    print(f"Data saved successfully.")
 
 if __name__ == "__main__":
     tickers = ["AAPL", "MSFT", "TSLA"]
-    data = pd.concat([download_stock_data(t) for t in tickers])
 
-    print(f"Downloaded {len(data)} rows")
-    print(data.head())
-
-    data.to_csv("chronos/data/raw_stock_prices.csv", index=False)
+    for ticker in tickers:
+        try:
+            df = download_stock_data(ticker)
+            save_to_postgres(df)
+        except Exception as e:
+            print(f"Failed to ingest {ticker}: {e}")
