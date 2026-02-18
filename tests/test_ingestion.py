@@ -11,9 +11,9 @@ def test_download_stock_data_returns_dataframe():
 
 def test_download_stock_data_has_required_columns():
     """Test that DataFrame has expected columns."""
-    df = download_stock_data("APPL", years=1)
+    df = download_stock_data("AAPL", years=1)
 
-    required_columns = ['Date', 'Close', 'ticker']
+    required_columns = ['date', 'close', 'ticker']
     for col in required_columns:
         assert col in df.columns
 
