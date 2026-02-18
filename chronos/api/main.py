@@ -3,16 +3,20 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from chronos.utils.db import get_db
 from chronos.models.sql import StockData
+from chronos.schemas.stock import TickerResponse
+from chronos.utils.logger import log
 
-app = FastAPI(title="CHRONOS API")
+app = FastAPI(title="CHRONOS API", version="0.1.0")
 
 @app.get("/health")
 def health_check():
+    log.debug("Health check requested")
     return {"status": "healthy", "database": "connected"}
 
-@app.get("/data/{ticker}")
+@app.get("/data/{ticker}", response_model=TickerResponse)
 def get_ticker_data(ticker: str, limit: int = 10, db: Session = Depends(get_db)):
     """Get historical data for a ticker from Postgres."""
+    log.info(f"Fetching data for {ticker} (limit={limit})")
 
     results = (
         db.query(StockData)
@@ -23,22 +27,14 @@ def get_ticker_data(ticker: str, limit: int = 10, db: Session = Depends(get_db))
     )
 
     if not results:
+        log.warning(f"Ticker {ticker} not found in DB")
         raise HTTPException(status_code=404, detail=f"Ticker {ticker} not found in DB. Run ingestion.")
 
-    data = [
-        {
-            "date": r.date,
-            "close": r.close,
-            "volume": r.volume,
-            "open": r.open,
-            "high": r.high,
-            "low": r.low,
-        } for r in results
-    ]
-
-    return {
+    response = {
         "ticker": ticker,
-        "rows_returned": len(data),
-        "latest_price": data[0]["close"],
-        "data": data
+        "rows_returned": len(results),
+        "latest_price": results[0].close,
+        "data": results
     }
+
+    return response
