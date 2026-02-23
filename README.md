@@ -113,26 +113,27 @@ graph TD
 
 ## 📊 Project Roadmap
 
-### ✅ Phase 1: Foundation (Week 1-2)
+### ✅ Phase 1: Foundation (Week 1)
 
 - \[x\] Project initialization with Poetry + Git setup
 - \[x\] Yahoo Finance data ingestion (5 years historical data)
 - \[x\] Basic FastAPI endpoints (`/health`, `/data/{ticker}`)
 - \[x\] Fix NaN handling in API responses
 - \[x\] Unit tests for data ingestion
-- \[ \] Docker Compose setup (Postgres + MLflow + Airflow)
-- \[ \] Database integration (SQLAlchemy + Alembic migrations)
+- \[x\] Docker Compose setup (Postgres + MLflow + Airflow)
+- \[x\] Database integration (SQLAlchemy + Alembic migrations)
+- \[x\] Airflow DAG: Automated Daily Ingestion Pipeline
 
-### 🔄 Phase 2: Feature Engineering (Week 3-4)
+### 🔄 Phase 2: Feature Engineering (Week 2)
 
-- \[ \] PySpark configuration for local development
-- \[ \] Technical indicators (Moving Averages, RSI, MACD, Bollinger Bands)
-- \[ \] Lag features and time-series transformations
-- \[ \] Feature store creation in PostgreSQL
+- \[x\] PySpark configuration for robust data processing
+- \[x\] Technical indicators distributed calculation (Moving Averages, Volatility)
+- \[x\] Lag features and time-series transformations
+- \[x\] Feature store creation in PostgreSQL
 - \[ \] Airflow DAG: Feature engineering pipeline
 - \[ \] Data validation with Great Expectations
 
-### 🤖 Phase 3: Model Training (Week 5-6)
+### 🤖 Phase 3: Model Training (Week 3-4)
 
 - \[ \] Ridge Regression baseline model
 - \[ \] XGBoost gradient boosting model
@@ -142,7 +143,7 @@ graph TD
 - \[ \] Champion model selection logic
 - \[ \] Airflow DAG: Training orchestration
 
-### 📈 Phase 4: Monitoring & Deployment (Week 7-8)
+### 📈 Phase 4: Monitoring & Deployment (Week 5-6)
 
 - \[ \] Evidently AI drift detection
 - \[ \] Automated retraining triggers
