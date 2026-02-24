@@ -119,9 +119,9 @@ graph TD
 - \[x\] Yahoo Finance data ingestion (5 years historical data)
 - \[x\] Basic FastAPI endpoints (`/health`, `/data/{ticker}`)
 - \[x\] Fix NaN handling in API responses
-- \[x\] Unit tests for data ingestion
+- \[x\] Unit tests for data ingestion (Pytest + Mocks)
 - \[x\] Docker Compose setup (Postgres + MLflow + Airflow)
-- \[x\] Database integration (SQLAlchemy + Alembic migrations)
+- \[x\] Database integration (SQLAlchemy + Postgres connection)
 - \[x\] Airflow DAG: Automated Daily Ingestion Pipeline
 
 ### 🔄 Phase 2: Feature Engineering (Week 2)
@@ -129,8 +129,8 @@ graph TD
 - \[x\] PySpark configuration for robust data processing
 - \[x\] Technical indicators distributed calculation (Moving Averages, Volatility)
 - \[x\] Lag features and time-series transformations
-- \[x\] Feature store creation in PostgreSQL
-- \[ \] Airflow DAG: Feature engineering pipeline
+- \[x\] Feature store creation in PostgreSQL (stock_features table)
+- \[x\] Airflow DAG: Feature engineering pipeline integration
 - \[ \] Data validation with Great Expectations
 
 ### 🤖 Phase 3: Model Training (Week 3-4)

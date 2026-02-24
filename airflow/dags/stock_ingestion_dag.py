@@ -5,6 +5,7 @@ import pendulum
 
 # Importamos la lógica de negocio directamente de tu paquete
 from chronos.data.ingestion import download_stock_data, save_to_postgres
+from chronos.features.build_features import run_feature_pipeline
 from chronos.utils.logger import log
 
 # Configuración del DAG
@@ -29,14 +30,23 @@ def etl_process(tickers: list):
             log.error(f"❌ ETL failed for {ticker}: {e}")
             raise e
 
+def feature_engineering_process():
+    """Wrapper function for the PySpark Feature Engineering process"""
+    log.info("Starting Distributed Feature Engineering (PySpark)")
+    try:
+        run_feature_pipeline()
+        log.info("Feature Engineering Completed")
+    except Exception as e:
+        log.error(f"Feature Engineering failed: {e}")
+
 with DAG(
     'chronos_stock_ingestion',
     default_args=default_args,
-    description='Daily ingestion of stock data from Yahoo Finance',
+    description='End-to-End MLOps Pipeline: Ingestion & Feature Engineering',
     schedule_interval='0 18 * * 1-5',  # Lunes a Viernes a las 6:00 PM UTC
     start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
     catchup=False,
-    tags=['ingestion', 'stocks', 'chronos'],
+    tags=['ingestion', 'features', 'stocks', 'chronos'],
 ) as dag:
 
     ingest_task = PythonOperator(
@@ -45,4 +55,9 @@ with DAG(
         op_kwargs={'tickers': ["AAPL", "MSFT", "TSLA", "GOOGL", "NVDA"]},
     )
 
-    ingest_task
+    feature_task = PythonOperator(
+        task_id='calculate_features_pyspark',
+        python_callable=feature_engineering_process,
+    )
+
+    ingest_task >> feature_task

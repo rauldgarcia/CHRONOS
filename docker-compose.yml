@@ -21,6 +21,7 @@ x-airflow-common:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - .:/opt/airflow/repo   # We set up the entire repo so that Airflow can see 'chronos'
+    - ./jars:/opt/airflow/jars
   depends_on:
     postgres:
       condition: service_healthy
