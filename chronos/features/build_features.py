@@ -1,5 +1,6 @@
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+from pyspark.sql import DataFrame
 from chronos.utils.spark import get_spark_session
 from chronos.utils.logger import log
 import os
@@ -11,7 +12,28 @@ DB_PORT = "5433"
 DB_NAME = os.getenv("POSTGRES_DB", "chronos_db")
 JDBC_URL = f"jdbc:postgresql://{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+def calculate_features(raw_df: DataFrame) -> DataFrame:
+    """
+    Pure function: Transform raw stock data into feature-rich data.
+    Separated from I/O to allow unit testing.
+    """
+    window_spec = Window.partitionBy("ticker").orderBy("date")
+
+    features_df = raw_df.withColumn(
+        "daily_return",
+        (F.col("close") - F.lag("close", 1).over(window_spec)) / F.lag("close", 1).over(window_spec)
+    ).withColumn(
+        "sma_20",
+        F.avg("close").over(window_spec.rowsBetween(-19, 0))
+    ).withColumn(
+        "volatility_20",
+        F.stddev("close").over(window_spec.rowsBetween(-19, 0))
+    )
+
+    return features_df.na.drop()
+
 def run_feature_pipeline():
+    """Main execution function handling I/O and orchestration."""
     spark = get_spark_session()
 
     log.info("Reading raw data from Postgres...")
@@ -26,22 +48,8 @@ def run_feature_pipeline():
         .load()
     )
 
-    window_spec = Window.partitionBy("ticker").orderBy("date")
-
     log.info("Calculating technical indicators...")
-
-    features_df = raw_df.withColumn(
-        "daily_return",
-        (F.col("close") - F.lag("close", 1).over(window_spec)) / F.lag("close", 1).over(window_spec)
-    ).withColumn(
-        "sma_20",
-        F.avg("close").over(window_spec.rowsBetween(-19, 0))
-    ).withColumn(
-        "volatility_20",
-        F.stddev("close").over(window_spec.rowsBetween(-19, 0))
-    )
-
-    features_df = features_df.na.drop()
+    features_df = calculate_features(raw_df)
 
     log.info("Writing features to stock_features table...")
 

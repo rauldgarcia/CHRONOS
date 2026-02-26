@@ -7,8 +7,6 @@ from chronos.utils.db import engine, Base, SessionLocal
 from chronos.models.sql import StockData
 from chronos.utils.logger import log
 
-Base.metadata.create_all(bind=engine)
-
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def download_stock_data(ticker: str, years: int = 5) -> pd.DataFrame:
     """Download historical stock data from Yahoo Finance with retries."""
@@ -51,6 +49,8 @@ def save_to_postgres(df: pd.DataFrame):
     """
     log.info(f"Saving {len(df)} rows to DB...")
     
+    Base.metadata.create_all(bind=engine)
+
     data = df.to_dict(orient='records')
     try:
         with SessionLocal() as session:
