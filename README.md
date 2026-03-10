@@ -131,7 +131,7 @@ graph TD
 - \[x\] Lag features and time-series transformations
 - \[x\] Feature store creation in PostgreSQL (stock_features table)
 - \[x\] Airflow DAG: Feature engineering pipeline integration
-- \[ \] Data validation with Great Expectations
+- \[x\] Data validation with Great Expectations
 
 ### 🤖 Phase 3: Model Training (Week 3-4)
 

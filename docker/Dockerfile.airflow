@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir \
     loguru \
     psycopg2-binary \
     pydantic \
-    pyspark
+    pyspark \
+    "great-expectations<1.0.0"
 
 ENV PYTHONPATH="${PYTHONPATH}:/opt/airflow/repo"
