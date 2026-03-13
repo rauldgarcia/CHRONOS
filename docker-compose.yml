@@ -56,8 +56,10 @@ services:
       - server
       - --backend-store-uri
       - postgresql://chronos_user:chronos_password@postgres:5432/mlflow_db
-      - --default-artifact-root
+      - --artifacts-destination
       - /mlflow/artifacts
+      - --default-artifact-root
+      - mlflow-artifacts:/
       - --host
       - 0.0.0.0
       - --port

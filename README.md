@@ -86,27 +86,46 @@ graph TD
 - Docker & Docker Compose
 - Ubuntu 24.04
 
-### Installation
+### Installation & Infrastructure
 
-    # Clone repository
+    # 1. Clone repository
     git clone https://github.com/rauldgarcia/chronos.git
     cd chronos
 
-    # Install dependencies
+    # 2. Install dependencies
     poetry install
 
-    # Download historical data
-    poetry run python chronos/data/ingestion.py
+    # 3. Create .env file (Mandatory for Airflow/Postgres)
+    echo "AIRFLOW_UID=50000" > .env
+    echo "ENVIRONMENT=local" >> .env
+    echo "POSTGRES_USER=chronos_user" >> .env
+    echo "POSTGRES_PASSWORD=chronos_password" >> .env
+    echo "POSTGRES_DB=chronos_db" >> .env
+    echo "POSTGRES_SERVER=postgres" >> .env
+    echo "POSTGRES_PORT=5432" >> .env
 
-    # Start API server
-    poetry run uvicorn chronos.api.main:app --reload
+    # 4. Start MLOps Infrastructure (Postgres, Airflow, MLflow)
+    sudo docker-compose up -d --build
+
+### Run the Pipeline (Data & Models)
+
+    # 1. Execute the ETL Pipeline
+    # Access Airflow at http://localhost:8080 (admin/admin)
+    # Toggle ON and trigger the 'chronos_stock_ingestion' DAG
+
+    # 2. Train Models (Ridge, XGBoost) and log to MLflow
+    poetry run python -m chronos.models.train
+    # View the champion models at http://localhost:5000
 
 ### Test the API
 
-    # Health check
+    # 1. Start API server locally
+    poetry run uvicorn chronos.api.main:app --reload
+
+    # 2. Health check (In another terminal)
     curl http://localhost:8000/health
 
-    # Get stock data
+    # 3. Get historical data
     curl http://localhost:8000/data/AAPL
 
 ---
@@ -135,12 +154,12 @@ graph TD
 
 ### 🤖 Phase 3: Model Training (Week 3-4)
 
-- \[ \] Ridge Regression baseline model
-- \[ \] XGBoost gradient boosting model
+- \[x\] Ridge Regression baseline model
+- \[x\] XGBoost gradient boosting model
 - \[ \] LSTM deep learning model (TensorFlow + CUDA)
 - \[ \] Voting Ensemble implementation
-- \[ \] MLflow experiment tracking and model registry
-- \[ \] Champion model selection logic
+- \[x\] MLflow experiment tracking and model registry
+- \[x\] Champion model selection logic
 - \[ \] Airflow DAG: Training orchestration
 
 ### 📈 Phase 4: Monitoring & Deployment (Week 5-6)
