@@ -156,11 +156,11 @@ graph TD
 
 - \[x\] Ridge Regression baseline model
 - \[x\] XGBoost gradient boosting model
-- \[ \] LSTM deep learning model (TensorFlow + CUDA)
-- \[ \] Voting Ensemble implementation
+- \[x\] LSTM deep learning model (TensorFlow + CUDA)
+- \[x\] Voting Ensemble implementation
 - \[x\] MLflow experiment tracking and model registry
 - \[x\] Champion model selection logic
-- \[ \] Airflow DAG: Training orchestration
+- \[x\] Airflow DAG: Training orchestration
 
 ### 📈 Phase 4: Monitoring & Deployment (Week 5-6)
 
