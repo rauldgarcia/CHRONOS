@@ -20,6 +20,10 @@ RUN pip install --no-cache-dir \
     psycopg2-binary \
     pydantic \
     pyspark \
-    "great-expectations<1.0.0"
+    "great-expectations<1.0.0" \
+    scikit-learn \
+    xgboost \
+    "mlflow==2.10.0" \
+    "tensorflow[and-cuda]==2.16.1"
 
 ENV PYTHONPATH="${PYTHONPATH}:/opt/airflow/repo"

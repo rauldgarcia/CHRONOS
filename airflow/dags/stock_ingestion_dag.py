@@ -8,6 +8,7 @@ from chronos.data.ingestion import download_stock_data, save_to_postgres
 from chronos.features.build_features import run_feature_pipeline
 from chronos.utils.logger import log
 from chronos.data.validation import run_data_validation
+from chronos.models.train import train_models
 
 # Configuración del DAG
 default_args = {
@@ -41,12 +42,20 @@ def feature_engineering_process():
         log.info("Feature Engineering Completed")
     except Exception as e:
         log.error(f"Feature Engineering failed: {e}")
+        raise e
 
 
 def validation_process():
     """Wrapper function for Data Quality Validation"""
     log.info("Starting Data Validation (Great Expectation)")
     run_data_validation()
+
+
+def train_models_process():
+    """Wrapper function for Machine Learning Training"""
+    log.info("Starting Model Training (GPU Enabled)")
+    train_models("AAPL")
+    log.info("Model Training Completed")
 
 
 with DAG(
@@ -74,4 +83,9 @@ with DAG(
         python_callable=feature_engineering_process,
     )
 
-    ingest_task >> validate_task >> feature_task
+    train_task = PythonOperator(
+        task_id="train_predictive_models",
+        python_callable=train_models_process,
+    )
+
+    ingest_task >> validate_task >> feature_task >> train_task

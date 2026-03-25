@@ -25,6 +25,13 @@ x-airflow-common:
   depends_on:
     postgres:
       condition: service_healthy
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
 
 services:
   postgres:
