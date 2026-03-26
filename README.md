@@ -132,7 +132,7 @@ graph TD
 
 ## 📊 Project Roadmap
 
-### ✅ Phase 1: Foundation (Week 1)
+### ✅ Phase 1: Foundation
 
 - \[x\] Project initialization with Poetry + Git setup
 - \[x\] Yahoo Finance data ingestion (5 years historical data)
@@ -143,7 +143,7 @@ graph TD
 - \[x\] Database integration (SQLAlchemy + Postgres connection)
 - \[x\] Airflow DAG: Automated Daily Ingestion Pipeline
 
-### 🔄 Phase 2: Feature Engineering (Week 2)
+### 🔄 Phase 2: Feature Engineering
 
 - \[x\] PySpark configuration for robust data processing
 - \[x\] Technical indicators distributed calculation (Moving Averages, Volatility)
@@ -152,7 +152,7 @@ graph TD
 - \[x\] Airflow DAG: Feature engineering pipeline integration
 - \[x\] Data validation with Great Expectations
 
-### 🤖 Phase 3: Model Training (Week 3-4)
+### 🤖 Phase 3: Model Training
 
 - \[x\] Ridge Regression baseline model
 - \[x\] XGBoost gradient boosting model
@@ -162,11 +162,17 @@ graph TD
 - \[x\] Champion model selection logic
 - \[x\] Airflow DAG: Training orchestration
 
-### 📈 Phase 4: Monitoring & Deployment (Week 5-6)
+### 🔮 Phase 4: Serving & Inference
+
+- \[x\] FastAPI forecast endpoint (`/forecast/{ticker}`)
+- \[x\] Dynamic Champion Model retrieval from MLflow Registry
+- \[x\] Real-time inference using the latest PySpark features
+- \[x\] Pydantic strict response validation
+
+### 📈 Phase 5: Monitoring & Deployment
 
 - \[ \] Evidently AI drift detection
 - \[ \] Automated retraining triggers
-- \[ \] FastAPI `/forecast/{ticker}` endpoint
 - \[ \] TITAN integration (Forecast Agent)
 - \[ \] Docker containerization
 - \[ \] Cloud Run deployment
