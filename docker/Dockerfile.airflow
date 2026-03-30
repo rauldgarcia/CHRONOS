@@ -24,6 +24,7 @@ RUN pip install --no-cache-dir \
     scikit-learn \
     xgboost \
     "mlflow==2.10.0" \
-    "tensorflow[and-cuda]==2.16.1"
+    "tensorflow[and-cuda]==2.16.1" \
+    "evidently==0.6.7"
 
 ENV PYTHONPATH="${PYTHONPATH}:/opt/airflow/repo"

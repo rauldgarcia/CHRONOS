@@ -9,6 +9,7 @@ from chronos.features.build_features import run_feature_pipeline
 from chronos.utils.logger import log
 from chronos.data.validation import run_data_validation
 from chronos.models.train import train_models
+from chronos.monitoring.drift import detect_drift
 
 # Configuración del DAG
 default_args = {
@@ -58,6 +59,12 @@ def train_models_process():
     log.info("Model Training Completed")
 
 
+def drift_detection_process():
+    log.info("Starting Data Drift Detection")
+    detect_drift("AAPL")
+    log.info("Drift Detection Completed")
+
+
 with DAG(
     "chronos_stock_ingestion",
     default_args=default_args,
@@ -83,9 +90,14 @@ with DAG(
         python_callable=feature_engineering_process,
     )
 
+    drift_task = PythonOperator(
+        task_id="detect_data_drift",
+        python_callable=drift_detection_process,
+    )
+
     train_task = PythonOperator(
         task_id="train_predictive_models",
         python_callable=train_models_process,
     )
 
-    ingest_task >> validate_task >> feature_task >> train_task
+    ingest_task >> validate_task >> feature_task >> drift_task >> train_task

@@ -171,7 +171,9 @@ graph TD
 
 ### 📈 Phase 5: Monitoring & Deployment
 
-- \[ \] Evidently AI drift detection
+- \[x\] Evidently AI drift detection
+- \[x\] Automated HTML drift reporting integrated into MLflow
+- \[x\] Airflow DAG: Drift validation node prior to model training
 - \[ \] Automated retraining triggers
 - \[ \] TITAN integration (Forecast Agent)
 - \[ \] Docker containerization
