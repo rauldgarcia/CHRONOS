@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 
 class StockDataBase(BaseModel):
@@ -29,4 +29,5 @@ class ForecastResponse(BaseModel):
     target_date: datetime
     predicted_close: float
     model_used: str
-    model_run_id: str
+    model_run_id: Optional[str] = None  # MLflow run ID (local) or GCS URI (production)
+    environment: str = "local"          # "local" | "production"

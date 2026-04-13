@@ -1,0 +1,52 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# CHRONOS API — Production Docker Image
+# ──────────────────────────────────────────────────────────────────────────────
+# Build from repo root:
+#   docker build -f docker/Dockerfile.api -t chronos-api .
+#
+# Run locally (mirrors Cloud Run behavior):
+#   docker run -p 8080:8080 \
+#     -e ENVIRONMENT=production \
+#     -e GCS_BUCKET_NAME=chronos-mlflow-artifacts-evidentedesarrollo \
+#     -v /path/to/chronos-sa-key.json:/secrets/sa-key.json \
+#     -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa-key.json \
+#     chronos-api
+#
+# Note: Only API dependencies are installed (no PySpark, GE, Evidently).
+# This keeps the image lean and production-focused.
+# ──────────────────────────────────────────────────────────────────────────────
+
+FROM python:3.12-slim
+
+# libgomp1 is required by XGBoost for its parallel computation threads.
+# It is not present in python:slim and must be installed explicitly.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# ── Dependencies ──────────────────────────────────────────────────────────────
+# Copy requirements first so Docker can cache this layer independently of
+# source code changes.
+COPY requirements.api.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.api.txt
+
+# ── Source code ───────────────────────────────────────────────────────────────
+# Only the chronos package is needed at runtime; training, airflow, and
+# Spark utilities are excluded via .dockerignore.
+COPY chronos/ ./chronos/
+
+# Make the chronos package importable without a pip install step.
+ENV PYTHONPATH=/app
+
+# ── Runtime ───────────────────────────────────────────────────────────────────
+# Cloud Run injects the PORT environment variable at container startup.
+# Defaulting to 8080 allows local `docker run` without extra flags.
+ENV PORT=8080
+EXPOSE 8080
+
+# Shell form is required here so ${PORT} is expanded at runtime.
+# --workers 1: Cloud Run scales horizontally via new instances, not threads.
+CMD ["sh", "-c", "uvicorn chronos.api.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]

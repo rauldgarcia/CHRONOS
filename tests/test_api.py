@@ -18,11 +18,14 @@ app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 def test_health_endpoint():
-    """Test that health endpoint returns 200."""
+    """Test that health endpoint returns 200 with status and environment info."""
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy", "database": "connected"}
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert "environment" in data
+    assert "serving_mode" in data
 
 
 def test_get_ticker_data_success():

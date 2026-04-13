@@ -1,0 +1,40 @@
+# CHRONOS API — Runtime dependencies only
+# ════════════════════════════════════════
+# This file intentionally excludes training-only dependencies:
+#   - pyspark         (feature engineering — runs separately)
+#   - great-expectations (data validation — runs separately)
+#   - evidently       (drift monitoring  — runs separately)
+#   - airflow         (orchestration     — Cloud Composer / local Docker)
+#
+# Keeping this file lean ensures a fast Docker build and a small Cloud Run image.
+# ────────────────────────────────────────────────────────────────────────────────
+
+# API server
+fastapi>=0.129.0,<0.130.0
+uvicorn>=0.40.0,<0.41.0
+
+# Data handling
+pandas>=2.2.0,<3.0.0
+numpy>=1.26.0,<2.0.0
+
+# Live market data (production mode)
+yfinance>=1.2.0,<2.0.0
+
+# Database (local mode — Postgres via SQLAlchemy)
+sqlalchemy>=1.4.0,<2.0.0
+psycopg2-binary>=2.9.11,<3.0.0
+
+# ML models (both modes require these for inference)
+scikit-learn>=1.8.0,<2.0.0
+xgboost>=3.2.0,<4.0.0
+tensorflow==2.16.1
+
+# MLflow (local mode — resolves champion model from tracking server)
+mlflow==2.10.0
+
+# GCS (production mode — downloads champion model artifacts)
+google-cloud-storage>=2.10.0,<3.0.0
+
+# Utilities
+loguru>=0.7.3,<0.8.0
+tenacity>=9.1.4,<10.0.0

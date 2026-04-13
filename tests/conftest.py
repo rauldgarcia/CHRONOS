@@ -6,7 +6,7 @@ os.environ["POSTGRES_USER"] = "dummy"
 os.environ["POSTGRES_PASSWORD"] = "dummy"
 os.environ["POSTGRES_SERVER"] = "localhost"
 os.environ["POSTGRES_DB"] = "dummy"
-os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-17-openjdk-amd64"
+os.environ.setdefault("JAVA_HOME", "/usr/lib/jvm/java-17-openjdk-amd64")
 
 @pytest.fixture(scope="session")
 def spark():

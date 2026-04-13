@@ -1,0 +1,54 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# .dockerignore — CHRONOS
+# Excludes files from the Docker build context to speed up builds and prevent
+# secrets or unnecessary assets from entering the image.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Python artifacts
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.egg-info/
+.venv/
+dist/
+build/
+
+# Secrets — NEVER copy .env into the image; use Cloud Run env vars instead
+.env
+*.env
+*-key.json
+*.json.secret
+
+# Tests and dev tools
+tests/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Version control
+.git/
+.gitignore
+
+# Local MLflow tracking data (can be large)
+mlruns/
+
+# Spark JARs — only needed for local training, not for API serving
+jars/
+
+# Airflow — orchestration layer, not part of the API
+airflow/
+
+# Docker config files (not needed inside the image)
+docker/
+docker-compose.yml
+
+# Documentation and project meta
+*.md
+README.md
+.agent/
+prompt.txt
+
+# Poetry lock (deps are installed via requirements.api.txt in the image)
+poetry.lock
+pyproject.toml
