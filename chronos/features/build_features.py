@@ -3,7 +3,6 @@ from pyspark.sql.window import Window
 from pyspark.sql import DataFrame
 from chronos.utils.spark import get_spark_session
 from chronos.utils.logger import log
-import os
 
 from chronos.utils.db import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_SERVER, POSTGRES_PORT, POSTGRES_DB
 

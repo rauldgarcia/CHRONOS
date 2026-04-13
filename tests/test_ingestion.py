@@ -1,4 +1,3 @@
-import pytest
 from chronos.data.ingestion import download_stock_data
 
 def test_download_stock_data_returns_dataframe():

@@ -21,7 +21,7 @@ import os
 import pickle
 import tempfile
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 import mlflow
 import mlflow.pyfunc
