@@ -8,7 +8,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  POETRY_VERSION: "1.8.2"
+  POETRY_VERSION: "2.1.1"
   # Dummy values — conftest.py overrides these; the DB layer is mocked in tests.
   POSTGRES_SERVER: localhost
   POSTGRES_USER: chronos_test
