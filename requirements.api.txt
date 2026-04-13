@@ -27,7 +27,7 @@ psycopg2-binary>=2.9.11,<3.0.0
 # ML models (both modes require these for inference)
 scikit-learn>=1.8.0,<2.0.0
 xgboost>=3.2.0,<4.0.0
-tensorflow==2.16.1
+tensorflow-cpu==2.16.1
 
 # MLflow (local mode — resolves champion model from tracking server)
 mlflow==2.10.0

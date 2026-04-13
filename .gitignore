@@ -53,3 +53,6 @@ htmlcov/
 Thumbs.db
 
 .agent/
+test_env/
+.ruff_cache/
+.pytest_cache/

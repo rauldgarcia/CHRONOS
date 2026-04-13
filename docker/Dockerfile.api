@@ -47,6 +47,6 @@ ENV PYTHONPATH=/app
 ENV PORT=8080
 EXPOSE 8080
 
-# Shell form is required here so ${PORT} is expanded at runtime.
-# --workers 1: Cloud Run scales horizontally via new instances, not threads.
-CMD ["sh", "-c", "uvicorn chronos.api.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]
+# Shell form is not needed; exec form intercepts signals properly.
+# Cloud Run scales horizontally via new instances, not threads.
+CMD ["uvicorn", "chronos.api.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1"]
