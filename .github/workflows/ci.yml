@@ -43,11 +43,12 @@ jobs:
           poetry-version: ${{ env.POETRY_VERSION }}
 
       - name: Install Dependencies
-        run: poetry install
+        run: |
+          poetry install
+          poetry run pip install pytest httpx ruff
 
       - name: Linting (Ruff)
         run: |
-          poetry run pip install ruff
           poetry run ruff check .
           poetry run ruff format --check .
 
