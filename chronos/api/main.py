@@ -17,6 +17,7 @@ Operates in two modes controlled by the ENVIRONMENT environment variable:
       sma_20, volatility_20) in-memory, and runs inference.
     - Cost: $0. Cloud Run scales to zero when idle.
 """
+
 import os
 import pickle
 import tempfile
@@ -378,7 +379,9 @@ def _forecast_local(ticker: str) -> dict:
             prediction = model.predict(X_input)[0]
     except Exception as e:
         log.error(f"[LOCAL] Inference failed: {e}")
-        raise HTTPException(status_code=500, detail="Inference failed. Check MLflow server logs.")
+        raise HTTPException(
+            status_code=500, detail="Inference failed. Check MLflow server logs."
+        )
 
     target_date = latest_date + timedelta(days=1)
     return {

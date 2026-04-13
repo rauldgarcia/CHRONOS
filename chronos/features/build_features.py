@@ -4,9 +4,16 @@ from pyspark.sql import DataFrame
 from chronos.utils.spark import get_spark_session
 from chronos.utils.logger import log
 
-from chronos.utils.db import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_SERVER, POSTGRES_PORT, POSTGRES_DB
+from chronos.utils.db import (
+    POSTGRES_USER,
+    POSTGRES_PASSWORD,
+    POSTGRES_SERVER,
+    POSTGRES_PORT,
+    POSTGRES_DB,
+)
 
 JDBC_URL = f"jdbc:postgresql://{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
 
 def calculate_features(raw_df: DataFrame) -> DataFrame:
     """
@@ -15,22 +22,26 @@ def calculate_features(raw_df: DataFrame) -> DataFrame:
     """
     window_spec = Window.partitionBy("ticker").orderBy("date")
 
-    features_df = raw_df.withColumn(
-        "daily_return",
-        (F.col("close") - F.lag("close", 1).over(window_spec)) / F.lag("close", 1).over(window_spec)
-    ).withColumn(
-        "sma_20",
-        F.avg("close").over(window_spec.rowsBetween(-19, 0))
-    ).withColumn(
-        "volatility_20",
-        F.stddev("close").over(window_spec.rowsBetween(-19, 0))
+    features_df = (
+        raw_df.withColumn(
+            "daily_return",
+            (F.col("close") - F.lag("close", 1).over(window_spec))
+            / F.lag("close", 1).over(window_spec),
+        )
+        .withColumn("sma_20", F.avg("close").over(window_spec.rowsBetween(-19, 0)))
+        .withColumn(
+            "volatility_20", F.stddev("close").over(window_spec.rowsBetween(-19, 0))
+        )
     )
 
     clean_df = features_df.na.drop()
     count = clean_df.count()
-    log.info(f"Features calculated successfully. Total rows after dropping NAs: {count}")
-    
+    log.info(
+        f"Features calculated successfully. Total rows after dropping NAs: {count}"
+    )
+
     return clean_df
+
 
 def run_feature_pipeline():
     """Main execution function handling I/O and orchestration."""
@@ -53,11 +64,10 @@ def run_feature_pipeline():
 
     log.info("Writing features to stock_features table...")
 
-    mode = "overwrite" # or "append" if it is incremental
+    mode = "overwrite"  # or "append" if it is incremental
 
     (
-        features_df.write
-        .format("jdbc")
+        features_df.write.format("jdbc")
         .option("url", JDBC_URL)
         .option("dbtable", "stock_features")
         .option("user", POSTGRES_USER)
@@ -69,6 +79,7 @@ def run_feature_pipeline():
 
     log.success("Feature Engineering pipeline completed successfully.")
     spark.stop()
+
 
 if __name__ == "__main__":
     run_feature_pipeline()

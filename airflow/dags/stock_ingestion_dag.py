@@ -37,6 +37,7 @@ default_args = {
     "retry_delay": timedelta(minutes=2),
 }
 
+
 @dag(
     dag_id="chronos_mlops_pipeline",
     default_args=default_args,
@@ -56,9 +57,10 @@ def chronos_pipeline():
             """Downloads stock data from YFinance and saves to Postgres."""
             log.info(f"🚀 Starting ETL for {ticker}")
             from airflow.operators.python import get_current_context
+
             context = get_current_context()
             context["my_custom_map_index"] = f"Ingesting: {ticker}"
-            
+
             try:
                 df = download_stock_data(ticker)
                 save_to_postgres(df)

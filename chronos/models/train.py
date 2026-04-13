@@ -154,7 +154,9 @@ def _upload_models_to_gcs(
         # Save the last feature row from training data as reference.
         # In production, the API computes live features via yfinance instead.
         last_row = training_df[FEATURE_COLS].iloc[-1].to_dict()
-        last_date_col = training_df["date"].iloc[-1] if "date" in training_df.columns else "unknown"
+        last_date_col = (
+            training_df["date"].iloc[-1] if "date" in training_df.columns else "unknown"
+        )
         features_meta = {
             "ticker": ticker,
             "date": str(last_date_col),
@@ -194,7 +196,7 @@ def train_models(ticker: str):
     )
 
     predictions = {}
-    model_objects = {}   # Kept in memory for optional GCS export
+    model_objects = {}  # Kept in memory for optional GCS export
     best_model_name = None
     best_mse = float("inf")
 

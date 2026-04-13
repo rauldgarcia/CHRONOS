@@ -30,4 +30,4 @@ class ForecastResponse(BaseModel):
     predicted_close: float
     model_used: str
     model_run_id: Optional[str] = None  # MLflow run ID (local) or GCS URI (production)
-    environment: str = "local"          # "local" | "production"
+    environment: str = "local"  # "local" | "production"

@@ -7,14 +7,17 @@ from chronos.models.sql import StockData
 
 mock_session = MagicMock()
 
+
 def override_get_db():
     try:
         yield mock_session
     finally:
         pass
 
+
 app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
+
 
 def test_health_endpoint():
     """Test that health endpoint returns 200 with status and environment info."""
@@ -36,14 +39,12 @@ def test_get_ticker_data_success():
         high=155.0,
         low=149.0,
         close=153.0,
-        volume=1000000.0
+        volume=1000000.0,
     )
-    (mock_session.query.return_value
-     .filter.return_value
-     .order_by.return_value
-     .limit.return_value
-     .all.return_value) = [mock_row]
-    
+    (
+        mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value
+    ) = [mock_row]
+
     response = client.get("/data/AAPL")
 
     assert response.status_code == 200
@@ -58,12 +59,10 @@ def test_get_ticker_data_success():
 
 def test_get_ticker_data_not_found():
     """Test requesting data for non-existent ticker."""
-    (mock_session.query.return_value
-     .filter.return_value
-     .order_by.return_value
-     .limit.return_value
-     .all.return_value) = []
-    
+    (
+        mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value
+    ) = []
+
     response = client.get("/data/INVALID")
 
     assert response.status_code == 404

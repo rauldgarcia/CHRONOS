@@ -17,6 +17,7 @@ GCS bucket structure:
             ├── lstm.keras            # Keras-format LSTM model
             └── latest_features.json  # Last training row (reference)
 """
+
 import json
 import os
 

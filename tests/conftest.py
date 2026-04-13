@@ -8,6 +8,7 @@ os.environ["POSTGRES_SERVER"] = "localhost"
 os.environ["POSTGRES_DB"] = "dummy"
 os.environ.setdefault("JAVA_HOME", "/usr/lib/jvm/java-17-openjdk-amd64")
 
+
 @pytest.fixture(scope="session")
 def spark():
     """
@@ -15,8 +16,7 @@ def spark():
     Runs once per test session.
     """
     spark_session = (
-        SparkSession.builder
-        .appName("pytest-pyspark-local")
+        SparkSession.builder.appName("pytest-pyspark-local")
         .master("local[1]")
         .config("spark.sql.shuffle.partitions", "1")
         .getOrCreate()
